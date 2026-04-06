@@ -1,0 +1,6 @@
+Package: jlmp-frontend
+Version: 1.0.0
+Depends: python3, jlmp
+Architecture: all
+Maintainer: owmyeyesturnondarkmode <https://github.com/owmyeyesturnondarkmode>
+Description: A frontend for JLMP (J's Library Managment Software).

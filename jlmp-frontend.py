@@ -185,12 +185,15 @@ book_remove_button = tk.Button(root, text="Remove Book", command=lambda: remove_
 book_remove_button.grid(column=0,row=1,padx=10,pady=10,sticky="ew")
 
 settings_button = tk.Button(root, text="Settings", command=lambda: settings())
-settings_button.grid(column=2,row=0,padx=10,pady=10,sticky="ew",ipadx=10)
+settings_button.grid(column=2,row=0,padx=10,pady=10,sticky="ew",ipadx=7)
 
 manage_patron_button = tk.Button(root, text="Manage Patron", command=lambda: manage_patron())
 manage_patron_button.grid(column=1,row=1,padx=10,pady=10,sticky="ew")
 
 add_patron_button = tk.Button(root, text="Add Patron", command=lambda: print("Add Patron"))
 add_patron_button.grid(column=1,row=0,padx=10,pady=10,sticky="ew")
+
+renew_loan_button = tk.Button(root,text="Renew Loan",command=lambda:print("Renew Loan"))
+renew_loan_button.grid(column=2,row=1,padx=10,pady=10,sticky="ew")
 
 root.mainloop()

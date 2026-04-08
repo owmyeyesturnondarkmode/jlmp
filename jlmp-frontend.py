@@ -97,7 +97,7 @@ def remove_book():
 def settings():
     settings_dialog = tk.Toplevel(root)
     settings_dialog.title("Settings")
-    settings_dialog.geometry("325x300")
+    settings_dialog.geometry("325x275")
     label_library_directory = tk.Label(settings_dialog,text="Library Directory:")
     label_library_directory.grid(column=0,row=0,padx=5,pady=5)
     entry_library_directory = tk.Entry(settings_dialog,state="normal" if not os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) else "disabled")
@@ -115,9 +115,9 @@ def settings():
     init_button = tk.Button(settings_dialog, text="Init", command=lambda: jlmpinit(entry_barcode.get(), entry_loan_period.get()),state="normal" if not os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) else "disabled")
     init_button.grid(column=0,row=4,padx=5,pady=10,sticky="w")
     save_button = tk.Button(settings_dialog, text="Save", command=lambda: savesettings(entry_loan_period.get()))
-    save_button.grid(column=0,row=5,padx=5,pady=5,ipady=10)
+    save_button.grid(column=0,row=5,padx=5,pady=5,)
     cancel_button = tk.Button(settings_dialog, text="Cancel", command=settings_dialog.destroy)
-    cancel_button.grid(column=1,row=5,padx=5,pady=5,ipady=10)
+    cancel_button.grid(column=1,row=5,padx=5,pady=5)
     def jlmpinit(barcode_length, loan_period):
         data_dir = os.path.expanduser("~/.local/share/jlmp-frontend")
         if entry_barcode.get() != "" and entry_loan_period.get() != "" and entry_library_directory.get() != "":
@@ -127,10 +127,15 @@ def settings():
             with open(f"{data_dir}/config.ini","w") as f:
                 f.write(entry_library_directory.get())
             JLMP.homedir = os.path.expanduser(entry_library_directory.get())
-            if not os.path.exists(f"{JLMP.homedir}"):
-                os.makedirs(f"{JLMP.homedir}")
-            JLMP.Library.init(barcode_length, loan_period)
+            JLMP.library.init(barcode_length, loan_period)
             settings_dialog.destroy()
+            success = tk.Toplevel(root)
+            success.title("Success")
+            success.geometry("200x100")
+            success_label = tk.Label(success, text="JLMP Initialized Successfully!")
+            success_label.pack(padx=10,pady=10)
+            ok_button = tk.Button(success, text="OK", command=success.destroy)
+            ok_button.pack(padx=10,pady=10)
         else:
             alert_dialog = tk.Toplevel(settings_dialog)
             alert_dialog.title("Error")
@@ -156,19 +161,36 @@ def settings():
             ok_button = tk.Button(alert_dialog, text="OK", command=alert_dialog.destroy)
             ok_button.pack(padx=10,pady=10)
 
+def manage_patron():
+    card_number_dialog = tk.Toplevel(root)
+    card_number_dialog.title("Manage Patron")
+    card_number_dialog.geometry("300x100")
+    label_card_number = tk.Label(card_number_dialog, text="Card Number:")
+    label_card_number.grid(column=0,row=0,padx=5,pady=5)
+    entry_card_number = tk.Entry(card_number_dialog)
+    entry_card_number.grid(column=1,row=0,padx=5,pady=5)
+    submit_button = tk.Button(card_number_dialog, text="Submit",command=lambda: submit_card_number(entry_card_number.get()))
+    submit_button.grid(columnspan=2,row=1,padx=5,pady=5)
+    def submit_card_number(card_number):
+        patron_number = card_number
+        card_number_dialog.destroy()
+        patron_dialog = tk.Toplevel(root)
+        patron_dialog.title("Manage Patron")
+        patron_dialog.geometry("300x300")
+
 book_add_button = tk.Button(root, text="Add Book", command=lambda: add_book())
-book_add_button.grid(column=0,row=0,padx=10,pady=10,sticky="w")
+book_add_button.grid(column=0,row=0,padx=10,pady=10,sticky="ew")
 
 book_remove_button = tk.Button(root, text="Remove Book", command=lambda: remove_book())
-book_remove_button.grid(column=0,row=1,padx=10,pady=10,sticky="w")
+book_remove_button.grid(column=0,row=1,padx=10,pady=10,sticky="ew")
 
 settings_button = tk.Button(root, text="Settings", command=lambda: settings())
-settings_button.grid(column=2,row=0,padx=10,pady=10,sticky="e")
+settings_button.grid(column=2,row=0,padx=10,pady=10,sticky="ew",ipadx=10)
 
-manage_patron_button = tk.Button(root, text="Manage Patron", command=lambda: print("Manage Patron"))
-manage_patron_button.grid(column=1,row=1,padx=10,pady=10)
+manage_patron_button = tk.Button(root, text="Manage Patron", command=lambda: manage_patron())
+manage_patron_button.grid(column=1,row=1,padx=10,pady=10,sticky="ew")
 
 add_patron_button = tk.Button(root, text="Add Patron", command=lambda: print("Add Patron"))
-add_patron_button.grid(column=1,row=0,padx=10,pady=10)
+add_patron_button.grid(column=1,row=0,padx=10,pady=10,sticky="ew")
 
 root.mainloop()

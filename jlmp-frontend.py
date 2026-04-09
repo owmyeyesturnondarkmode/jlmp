@@ -67,7 +67,7 @@ def add_book():
         fiction = fiction_var.get()
         year = entry_year.get()
         isbn = entry_isbn.get()
-        JLMP.add_book(title, author, genre, fiction, year, isbn)
+        JLMP.book.add(title, author, genre, fiction, year, isbn)
         add_book_dialog.destroy()
     submit_button = tk.Button(add_book_dialog, text="Submit", command=submit_book)
     submit_button.grid(column=0,row=6,padx=5,pady=10)
@@ -88,7 +88,7 @@ def remove_book():
     def submit_remove():
         barcode = entry_barcode.get()
         if areyousure_var.get():
-            JLMP.remove_book(barcode)
+            JLMP.book.remove(barcode)
             remove_book_dialog.destroy()
     submit_button = tk.Button(remove_book_dialog, text="Submit", command=submit_remove)
     submit_button.grid(column=0,row=2,padx=5,pady=5,sticky="w")
@@ -189,19 +189,28 @@ def manage_patron():
         patron_dialog = tk.Toplevel(root)
         patron_dialog.title("Manage Patron")
         patron_dialog.geometry("300x300")
-        label_name = tk.Label(patron_dialog,text=f"Name: {patron_info[0]}")
+        label_name = tk.Label(patron_dialog,text="Name: " + patron_info[0])
         label_name.grid(columnspan=2,row=0,padx=10,pady=5)
-        label_email = tk.Label(patron_dialog,text=f"Email: {patron_info[1]}")
+        label_email = tk.Label(patron_dialog,text="Email: " + patron_info[1])
         label_email.grid(columnspan=2,row=1,padx=10,pady=5)
-        label_phone = tk.Label(patron_dialog,text=f"Phone: {patron_info[2]}")
+        label_phone = tk.Label(patron_dialog,text="Phone: " + patron_info[2])
         label_phone.grid(columnspan=2,row=2,padx=10,pady=5)
-        label_notes = tk.Label(patron_dialog,text=f"Notes: {patron_info[3]}")
+        label_notes = tk.Label(patron_dialog,text="Notes: " + patron_info[3])
         label_notes.grid(columnspan=2,row=3,padx=10,pady=5)
-        label_card_number = tk.Label(patron_dialog,text=f"Card Number: {card_number}")
+        label_card_number = tk.Label(patron_dialog,text="Card Number: " + card_number)
         label_card_number.grid(columnspan=2,row=4,padx=10,pady=5)
         loans_button = tk.Button(patron_dialog,text="View Loans",command=lambda:veiw_loans(card_number))
         loans_button.grid(column=0,row=5,padx=10,pady=5)
-
+        delete_button = tk.Button(patron_dialog,text="Delete Patron",fg="red",command=lambda: delete_patron(card_number))
+        delete_button.grid(column=1,row=5,padx=10,pady=5)
+        def veiw_loans(card_number):
+            loans_dialog = tk.Toplevel(patron_dialog)
+            loans_dialog.title("Loans")
+            loans_dialog.geometry("400x300")
+            barcodes = JLMP.patron.list_loans(card_number)
+            for barcode in barcodes:
+                book_info = JLMP.book.get_info(barcode)
+                formated_info = f"{book_info[0]}: {book_info[1]} by {book_info[3]} - Due"
 
 def add_patron():
     add_patron_dialog = tk.Toplevel(root)

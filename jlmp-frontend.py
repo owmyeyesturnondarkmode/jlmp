@@ -214,7 +214,7 @@ def manage_patron():
             loans_dialog.geometry("400x300")
             loans_canvas = tk.Canvas(loans_dialog)
             loans_scrollbar = tk.Scrollbar(loans_dialog, orient="vertical", command=loans_canvas.yview)
-            loans_frame = tk.Frame(loans_canvas,relief="sunken",borderwidth=2)
+            loans_frame = tk.Frame(loans_canvas,relief="sunken",borderwidth=5)
             loans_canvas.create_window((0,0), window=loans_frame, anchor="nw")
             loans_canvas.configure(yscrollcommand=loans_scrollbar.set)
             loans_frame.bind("<Configure>", lambda e: loans_canvas.configure(scrollregion=loans_canvas.bbox("all")))
@@ -348,10 +348,23 @@ def search():
             formatted_result = f"""{result[1]}:
     Author: {result[5]}
     Genre: {result[2]}
-    Year: {result[4]}\n""" + (f"    Fiction\n" if result[3] == 'True' else "    Non-Fiction\n")
+    Year: {result[4]}
+    Barcode: {result[0]}\n""" + (f"    Fiction\n" if result[3] == 'True' else "    Non-Fiction\n")
             label_result = tk.Label(result_frame, text=formatted_result, justify="left", anchor="w")
             label_result.pack(padx=10,pady=5,anchor="w")
 
+def checknew(barcode,card_no):
+    try:
+        JLMP.book.renew_loan(barcode)
+        entry_barcode.delete("0",tk.END)
+    except:
+        JLMP.book.loan(barcode,card_no)
+        entry_card_no.delete("0",tk.END)
+        entry_barcode.delete("0",tk.END)
+
+def check_in(barcode):
+    JLMP.book.return_loan(barcode)
+    entry_barcode.delete("0",tk.END)
 
 root.grid_rowconfigure(2,weight=1)
 

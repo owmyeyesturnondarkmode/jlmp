@@ -1,5 +1,5 @@
 # JLMP
-!!!JLMP will NOT function on its own. Get the frontend here: <https://github.com/owmyeyesturnondarkmode/jlmp-frontend>!!!
+> JLMP **NEEDS** the backend to function. Get it here: <https://github.com/owmyeyesturnondarkmode/lib-jlmp>
 
 **J**'s **L**ibrary **M**anagment **P**rogram
 ## What?

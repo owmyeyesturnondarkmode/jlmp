@@ -212,13 +212,40 @@ def manage_patron():
             loans_dialog = tk.Toplevel(patron_dialog)
             loans_dialog.title("Loans")
             loans_dialog.geometry("400x300")
+            loans_canvas = tk.Canvas(loans_dialog)
+            loans_scrollbar = tk.Scrollbar(loans_dialog, orient="vertical", command=loans_canvas.yview)
+            loans_frame = tk.Frame(loans_canvas,relief="sunken",borderwidth=2)
+            loans_canvas.create_window((0,0), window=loans_frame, anchor="nw")
+            loans_canvas.configure(yscrollcommand=loans_scrollbar.set)
+            loans_frame.bind("<Configure>", lambda e: loans_canvas.configure(scrollregion=loans_canvas.bbox("all")))
+
+            def _on_mousewheel(event):
+                loans_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+            def _on_mousewheel_linux(event):
+                if event.num == 4:
+                    loans_canvas.yview_scroll(-1, "units")
+                elif event.num == 5:
+                    loans_canvas.yview_scroll(1, "units")
+
+            loans_canvas.bind("<MouseWheel>", _on_mousewheel)
+            loans_canvas.bind("<Button-4>", _on_mousewheel_linux)
+            loans_canvas.bind("<Button-5>", _on_mousewheel_linux)
+
+            button_frame = tk.Frame(loans_dialog)
+            close_button = tk.Button(button_frame, text="Close", command=loans_dialog.destroy)
+            close_button.pack(padx=10, pady=5)
+            button_frame.pack(side="bottom", fill="x")
+
+            loans_canvas.pack(side="left", fill="both", expand=True)
+            loans_scrollbar.pack(side="right", fill="y")
+
             barcodes = JLMP.patron.list_loans(card_number)
             for loan in barcodes:
                 book_info = JLMP.book.get_info(loan[0])
                 formated_info = f"{book_info[0]}: {book_info[1]} by {book_info[3]} - Due {loan[1]}, Renewed {loan[2]} times"
-                label_loan = tk.Label(loans_dialog, text=formated_info)
+                label_loan = tk.Label(loans_frame, text=formated_info, justify="left", anchor="w")
                 label_loan.pack(padx=10,pady=5,anchor="w")
-            close_button = tk.Button(loans_dialog, text="Close",command=loans_dialog.destroy)
         def delete_patron(card_number):
             confirm_dialog = tk.Toplevel(patron_dialog)
             confirm_dialog.title("Confirm Delete")
@@ -346,7 +373,22 @@ add_patron_button.grid(column=1,row=0,padx=10,pady=10,sticky="ew",ipadx=10)
 search_button = tk.Button(root,text="Search",command=lambda:search())
 search_button.grid(column=2,row=1,padx=10,pady=10,sticky="ew")
 
-checknew_loan_button = tk.Button(root,text="Check Out/Renew",command=lambda:checknew())
+checknew_loan_button = tk.Button(root,text="Check Out/Renew",command=lambda:checknew(entry_barcode.get(),entry_card_no.get()))
 checknew_loan_button.grid(column=2,row=2,padx=10,pady=10,sticky="sew")
+
+check_in_button = tk.Button(root,text="Check In",command=lambda: check_in(entry_barcode.get()))
+check_in_button.grid(column=2,row=3,pady=10,padx=10,sticky="ew")
+
+label_barcode = tk.Label(root,text="Barcode:")
+label_barcode.grid(column=0,row=2,pady=10,padx=10,sticky="s")
+entry_barcode = tk.Entry(root,width=10)
+entry_barcode.grid(column=1,row=2,padx=10,pady=10,sticky="sew")
+
+label_card_no = tk.Label(root,text="Patron Card No.:")
+label_card_no.grid(column=0,row=3,pady=10,padx=10)
+entry_card_no = tk.Entry(root,width=10)
+entry_card_no.grid(column=1,row=3,padx=10,pady=10,sticky="ew")
+
+label_card_number = tk.Label
 
 root.mainloop()

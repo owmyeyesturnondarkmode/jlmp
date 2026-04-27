@@ -402,7 +402,7 @@ label_card_no.grid(column=0,row=4,pady=10,padx=10)
 entry_card_no = tk.Entry(root,width=10)
 entry_card_no.grid(column=1,row=4,padx=10,pady=10,sticky="ew")
 
-banner_path = os.path.join(os.path.dirname(__file__), "package", "usr", "lib", "jlmp", "banner.png")
+banner_path = "/usr/lib/jlmp/banner.png"
 if os.path.exists(banner_path):
     image_banner = tk.PhotoImage(file=banner_path)
     banner_label = tk.Label(root, image=image_banner)

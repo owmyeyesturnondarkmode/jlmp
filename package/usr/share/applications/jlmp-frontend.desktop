@@ -2,7 +2,7 @@
 Name=JLMP
 Comment=A library management and catalog software
 Exec=/usr/bin/jlmp-frontend.py
-Icon=jlmp
+Icon=/usr/share/icons/hicolor/256x256/jlmp.png
 Terminal=false
 Type=Application
 Categories=Utility;

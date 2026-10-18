@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>
 '''
 
+from time import sleep
 import tkinter as tk
 import JLMP
 import os
@@ -115,7 +116,9 @@ def settings():
     entry_loan_period = tk.Entry(settings_dialog)
     entry_loan_period.grid(column=1,row=3,padx=5,pady=5)
     init_button = tk.Button(settings_dialog, text="Init", command=lambda: jlmpinit(entry_barcode.get(), entry_loan_period.get()),state="normal" if not os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) else "disabled")
-    init_button.grid(column=0,row=4,padx=5,pady=10,sticky="w")
+    init_button.grid(column=0,row=4,padx=5,pady=10)
+    reset_button = tk.Button(settings_dialog, text="Reset", fg="red", command=lambda: reset(),state="normal" if os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) else "disabled")
+    reset_button.grid(column=1,row=4,padx=5,pady=10)
     save_button = tk.Button(settings_dialog, text="Save", state="normal" if os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) else "disabled",command=lambda: savesettings(entry_loan_period.get()))
     save_button.grid(column=0,row=5,padx=5,pady=5,)
     cancel_button = tk.Button(settings_dialog, text="Cancel", command=settings_dialog.destroy)
@@ -133,7 +136,7 @@ def settings():
             settings_dialog.destroy()
             success = tk.Toplevel(root)
             success.title("Success")
-            success.geometry("200x100")
+            success.geometry("225x100")
             success_label = tk.Label(success, text="JLMP Initialized Successfully!")
             success_label.pack(padx=10,pady=10)
             ok_button = tk.Button(success, text="OK", command=success.destroy)
@@ -159,6 +162,32 @@ def settings():
             alert_dialog.title("Error")
             alert_dialog.geometry("200x100")
             alert_label = tk.Label(alert_dialog, text="Loan period must be filled out!")
+            alert_label.pack(padx=10,pady=10)
+            ok_button = tk.Button(alert_dialog, text="OK", command=alert_dialog.destroy)
+            ok_button.pack(padx=10,pady=10)
+    def reset():
+        confirm_dialog = tk.Toplevel(settings_dialog)
+        confirm_dialog.title("Confirm Reset")
+        confirm_dialog.geometry("300x200")
+        label_confirm = tk.Label(confirm_dialog, text="Are you sure you want to reset JLMP?\nALL data WILL BE LOST!")
+        label_confirm.pack(padx=10,pady=10)
+        label_confirm_entry = tk.Label(confirm_dialog, text="Type 'RESET JLMP' to confirm:")
+        label_confirm_entry.pack(padx=10,pady=5) 
+        confirm_entry = tk.Entry(confirm_dialog)
+        confirm_entry.pack(padx=10,pady=10)
+        ok_button = tk.Button(confirm_dialog, text="OK", command=lambda: [confirm_dialog.destroy(), os.system(f"rm -rf {os.path.expanduser(JLMP.homedir)} {os.path.expanduser('~/.local/share/jlmp-frontend/init')}"), settings_dialog.destroy()],fg="red",state="disabled")
+        ok_button.pack(ipadx=10,padx=10,pady=10,side="left")
+        cancel_button = tk.Button(confirm_dialog, text="Cancel", command=confirm_dialog.destroy)
+        cancel_button.pack(padx=10,pady=5,side="right")
+        def update_ok_state(*args):
+            ok_button.config(state="normal" if confirm_entry.get() == "RESET JLMP" else "disabled")
+        confirm_entry.bind("<KeyRelease>", update_ok_state)
+        confirm_dialog.wait_window()
+        if not os.path.exists(os.path.expanduser("~/.local/share/jlmp-frontend/init")) and not os.path.exists(os.path.expanduser(f"{JLMP.homedir}")):
+            alert_dialog = tk.Toplevel(root)
+            alert_dialog.title("Reset Complete")
+            alert_dialog.geometry("200x100")
+            alert_label = tk.Label(alert_dialog, text="JLMP has been reset!",fg="red")
             alert_label.pack(padx=10,pady=10)
             ok_button = tk.Button(alert_dialog, text="OK", command=alert_dialog.destroy)
             ok_button.pack(padx=10,pady=10)

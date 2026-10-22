@@ -1,4 +1,6 @@
 *.deb
+JLMP.py
+jlmp-frontend-adw.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
